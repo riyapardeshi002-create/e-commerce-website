@@ -387,3 +387,5 @@ This project serves as a comprehensive real-world demonstration of fundamental c
 ## 📜 10. License & Academic Attribution
 Developed for college academic demonstration in **Cloud Computing & Modern Web Architecture**.
 Free for educational reference and coursework demonstration.
+#   e - c o m m e r c e - w e b s i t e  
+ 
