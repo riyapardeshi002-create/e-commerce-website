@@ -32,3 +32,39 @@
 .animate-fade-in {
   animation: fadeIn 0.25s ease-out forwards;
 }
+
+/* Print Invoice Styling */
+@media print {
+  /* Hide everything on the page except the printable invoice container */
+  body * {
+    visibility: hidden;
+  }
+  
+  #sole-printable-invoice,
+  #sole-printable-invoice * {
+    visibility: visible;
+  }
+
+  #sole-printable-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    background: #ffffff !important;
+    color: #09090b !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 10mm;
+  }
+}

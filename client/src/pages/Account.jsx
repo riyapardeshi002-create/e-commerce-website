@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Package, User, LogOut, ChevronDown, ChevronUp, MapPin, Phone, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Package, User, LogOut, ChevronDown, ChevronUp, MapPin, Phone, Calendar, ArrowRight, ShieldCheck, Printer, FileText } from 'lucide-react';
 import { ordersApi, formatINR } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import InvoiceModal from '../components/InvoiceModal';
 
 export default function Account({ onNavigate }) {
   const { user, logout } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -161,11 +163,23 @@ export default function Account({ onNavigate }) {
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between md:justify-end gap-6 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-100">
+                    <div className="flex items-center justify-between md:justify-end gap-4 pt-2 md:pt-0 border-t md:border-t-0 border-zinc-100">
                       <div className="text-right">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400">Total Amount</p>
                         <p className="text-base font-black text-zinc-950">{formatINR(order.totalAmount)}</p>
                       </div>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedInvoiceOrder(order);
+                        }}
+                        className="bg-zinc-100 hover:bg-zinc-200 text-zinc-900 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition active:scale-95"
+                        title="Print Purchase Bill"
+                      >
+                        <Printer className="w-3.5 h-3.5 text-brand-600" />
+                        <span className="hidden sm:inline">Bill / Invoice</span>
+                      </button>
 
                       <div className="p-2 text-zinc-400 hover:text-zinc-900 rounded-full">
                         {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
@@ -176,9 +190,18 @@ export default function Account({ onNavigate }) {
                   {/* Expanded Items Drawer */}
                   {isExpanded && (
                     <div className="px-6 pb-6 pt-2 bg-zinc-50 border-t border-zinc-100 space-y-4 animate-fade-in">
-                      <h4 className="text-xs font-black uppercase tracking-wider text-zinc-900">
-                        Order Snapshot & Items
-                      </h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-black uppercase tracking-wider text-zinc-900">
+                          Order Snapshot & Items
+                        </h4>
+                        <button
+                          onClick={() => setSelectedInvoiceOrder(order)}
+                          className="bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition shadow-sm active:scale-95"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>View Official Invoice</span>
+                        </button>
+                      </div>
 
                       <div className="space-y-2.5">
                         {order.orderItems?.map((item) => (
@@ -197,7 +220,7 @@ export default function Account({ onNavigate }) {
                               <div>
                                 <h5 className="font-bold text-zinc-900">{item.productNameSnapshot}</h5>
                                 <p className="text-[11px] text-zinc-500">
-                                  Size: {item.size} • Qty: {item.quantity} × {formatINR(item.unitPrice)}
+                                  Size: UK/US {item.size} • Qty: {item.quantity} × {formatINR(item.unitPrice)}
                                 </p>
                               </div>
                             </div>
@@ -232,6 +255,13 @@ export default function Account({ onNavigate }) {
           </div>
         )}
       </div>
+
+      {/* Invoice Modal for Selected Order */}
+      <InvoiceModal
+        order={selectedInvoiceOrder}
+        isOpen={Boolean(selectedInvoiceOrder)}
+        onClose={() => setSelectedInvoiceOrder(null)}
+      />
     </div>
   );
 }

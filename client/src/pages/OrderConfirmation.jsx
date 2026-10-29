@@ -1,8 +1,11 @@
-import React from 'react';
-import { CheckCircle2, Package, ArrowRight, Truck, Home } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Package, ArrowRight, Printer, FileText } from 'lucide-react';
 import { formatINR } from '../api/client';
+import InvoiceModal from '../components/InvoiceModal';
 
 export default function OrderConfirmation({ order, onContinueShopping, onViewOrders }) {
+  const [showInvoice, setShowInvoice] = useState(false);
+
   if (!order) return null;
 
   return (
@@ -20,7 +23,7 @@ export default function OrderConfirmation({ order, onContinueShopping, onViewOrd
           Thank you for your order!
         </h1>
         <p className="text-xs text-zinc-500 max-w-md mx-auto">
-          Your order has been recorded in the PostgreSQL database, inventory counts have been atomically updated, and a snapshot invoice has been generated.
+          Your order has been recorded in the PostgreSQL database, inventory counts have been atomically updated, and an official purchase bill has been generated.
         </p>
 
         {/* Order Identifier Box */}
@@ -45,11 +48,19 @@ export default function OrderConfirmation({ order, onContinueShopping, onViewOrd
         {/* Action Buttons */}
         <div className="pt-6 flex flex-wrap items-center justify-center gap-3">
           <button
+            onClick={() => setShowInvoice(true)}
+            className="bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-md transition active:scale-95 flex items-center gap-2"
+          >
+            <Printer className="w-4 h-4" />
+            <span>View & Print Bill / Invoice</span>
+          </button>
+
+          <button
             onClick={onViewOrders}
             className="bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-md transition active:scale-95 flex items-center gap-2"
           >
             <Package className="w-4 h-4" />
-            <span>View in My Orders</span>
+            <span>My Orders</span>
           </button>
 
           <button
@@ -64,9 +75,18 @@ export default function OrderConfirmation({ order, onContinueShopping, onViewOrd
 
       {/* Itemized Order Details Card */}
       <div className="mt-8 bg-zinc-50 rounded-3xl p-6 sm:p-8 border border-zinc-200 space-y-6">
-        <h3 className="text-sm font-black uppercase tracking-wider text-zinc-900">
-          Order Summary & Snapshots
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-black uppercase tracking-wider text-zinc-900">
+            Order Summary & Snapshots
+          </h3>
+          <button
+            onClick={() => setShowInvoice(true)}
+            className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5 transition"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Open Printable Tax Invoice</span>
+          </button>
+        </div>
 
         {/* Items */}
         <div className="space-y-3">
@@ -83,7 +103,7 @@ export default function OrderConfirmation({ order, onContinueShopping, onViewOrd
                 <div>
                   <h4 className="font-bold text-zinc-900">{item.productNameSnapshot}</h4>
                   <p className="text-[11px] text-zinc-500">
-                    Size: {item.size} • Qty: {item.quantity} × {formatINR(item.unitPrice)}
+                    Size: UK/US {item.size} • Qty: {item.quantity} × {formatINR(item.unitPrice)}
                   </p>
                 </div>
               </div>
@@ -124,6 +144,13 @@ export default function OrderConfirmation({ order, onContinueShopping, onViewOrd
           </div>
         </div>
       </div>
+
+      {/* Invoice Modal */}
+      <InvoiceModal
+        order={order}
+        isOpen={showInvoice}
+        onClose={() => setShowInvoice(false)}
+      />
     </div>
   );
 }

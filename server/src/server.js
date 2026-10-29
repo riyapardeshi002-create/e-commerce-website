@@ -10,6 +10,16 @@ const startServer = async () => {
     try {
       await prisma.$connect();
       console.log('✓ PostgreSQL connected successfully via Prisma');
+
+      // Check if product catalogue needs initial auto-seeding
+      const currentCount = await prisma.product.count();
+      if (currentCount < 50) {
+        console.log(`Current product count (${currentCount}) is below 50. Auto-seeding full product catalogue...`);
+        const seedDatabase = require('../prisma/seed');
+        await seedDatabase();
+      } else {
+        console.log(`✓ Product catalogue healthy (${currentCount} models available)`);
+      }
     } catch (dbErr) {
       console.warn('! Notice: Could not connect to PostgreSQL immediately on startup:');
       console.warn(`  ${dbErr.message}`);
