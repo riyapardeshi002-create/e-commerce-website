@@ -1,0 +1,51 @@
+databases:
+  - name: sole-postgres
+    databaseName: sole_store
+    user: sole_user
+    plan: free
+    region: oregon
+
+services:
+  # 1. Backend Web Service (Node.js & Express)
+  - type: web
+    name: sole-server
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: server
+    buildCommand: npm install && npx prisma generate && npx prisma migrate deploy
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sole-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        value: https://sole-client.onrender.com
+      - key: ADMIN_EMAIL
+        value: admin@sole.store
+      - key: ADMIN_PASSWORD
+        generateValue: true
+
+  # 2. Frontend Static Site (React & Vite)
+  - type: static
+    name: sole-client
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://sole-server.onrender.com/api

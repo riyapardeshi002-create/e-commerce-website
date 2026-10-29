@@ -1,0 +1,25 @@
+{
+  "name": "sole-store",
+  "version": "1.0.0",
+  "description": "SOLE - Full-Stack Shoe E-commerce Website (College Cloud Computing Project)",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build:client": "npm --prefix client run build",
+    "prisma:generate": "npm --prefix server run prisma:generate",
+    "prisma:seed": "npm --prefix server run prisma:seed"
+  },
+  "keywords": [
+    "ecommerce",
+    "react",
+    "vite",
+    "express",
+    "postgresql",
+    "prisma",
+    "render",
+    "cloud-computing"
+  ],
+  "author": "Riya",
+  "license": "MIT"
+}
