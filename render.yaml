@@ -6,7 +6,7 @@ databases:
     region: oregon
 
 services:
-  # 1. Backend Web Service (Node.js & Express)
+  # 1. Backend Web Service (Node.js & Express API)
   - type: web
     name: sole-server
     runtime: node
@@ -36,9 +36,12 @@ services:
       - key: ADMIN_PASSWORD
         generateValue: true
 
-  # 2. Frontend Static Site (React & Vite)
-  - type: static
+  # 2. Frontend Static Site (React & Vite SPA)
+  - type: web
     name: sole-client
+    runtime: static
+    plan: free
+    region: oregon
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
